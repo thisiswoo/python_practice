@@ -6,6 +6,8 @@
 - `pandas` : `2.0.3`
 - `selenium` : `4.10.0`
 - `lxml` : `4.9.2`
+- `Chrome` : `114.0.5735.133 (Official Build) (arm64) `
+- `ChromeDriver` : `114.0.5735.16`
 
 ## IDE
 - `IntelliJ` : `IntelliJ IDEA 2023.1.3 (Ultimate Edition)`
