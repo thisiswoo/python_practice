@@ -16,4 +16,4 @@
 - `Apple M1 Macbook Pro 13'`
 
 ## 프로젝트 항목
-- [Naver 주식 정보 크롤링](){:target="_blank"}
+- [Naver 주식 정보 크롤링](https://github.com/thisiswoo/python_practice/blob/dev/naver_stock_crawling/market_cap.py){:target="_blank"}
