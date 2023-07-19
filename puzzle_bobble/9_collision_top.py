@@ -1,4 +1,4 @@
-# 다음에 쏠 버블 정의
+# 천장 충돌 처리
 import os, random, math
 import pygame
 
@@ -128,6 +128,36 @@ def get_random_bubble_color():
                 colors.append(col)
     return random.choice(colors)
 
+# 버블 충돌 처리
+def process_collision():
+    global curr_bubble, fire
+    # spritecollideany() : bubble_group 내 어떠한 것이라도 충돌했다고 하면 그 충돌된 대상을 가지고 온다.
+    # bubble_group과 curr_bubble(현재 버블)이 collide_mask()(투명 영역 제외)하고 이미지(버블)가 있는 부분을 비교했을 때 충돌 되는 부분이 하나라도 있으면 충돌된 버블을 가져오기
+    hit_bubble = pygame.sprite.spritecollideany(curr_bubble, bubble_group, pygame.sprite.collide_mask )
+    if hit_bubble or curr_bubble.rect.top <= 0:
+        row_idx, col_idx = get_map_idx(*curr_bubble.rect.center) # * : 언패킹(x, y)
+        place_bubble(curr_bubble, row_idx, col_idx) # 충돌 후 해당 버블 위치 정의
+        curr_bubble = None
+        fire = None
+
+def get_map_idx(x, y):
+    row_idx = y // CELL_SIZE
+    col_idx = x // CELL_SIZE
+    if row_idx % 2 == 1:
+        col_idx = (x - (CELL_SIZE // 2)) // CELL_SIZE
+        if col_idx < 0:
+            col_idx = 0
+        elif col_idx > MAP_COL_COUNT - 2:
+            col_idx = MAP_COL_COUNT - 2
+
+    return row_idx, col_idx
+
+def place_bubble(bubble, row_idx, col_idx):
+    map[row_idx][col_idx] = bubble.color
+    position = get_bubble_position(row_idx, col_idx)
+    bubble.set_rect(position)
+    bubble_group.add(bubble)
+
 pygame.init()
 
 # 화면 크기 설정
@@ -164,6 +194,8 @@ CELL_SIZE = 56
 BUBBLE_WIDTH = 56
 BUBBLE_HEIGHT = 62
 RED = (255, 0, 0)
+MAP_ROW_COUNT = 11 # row(줄) 기준
+MAP_COL_COUNT = 8 # column(행) 기준
 
 # 화살표 관련 변수
 to_angle_left = 0 # 왼쪽으로 움직일 각도 정보
@@ -207,6 +239,9 @@ while running:
     if not curr_bubble:
         prepare_bubbles()
 
+    if fire:
+        process_collision() # 충돌 처리
+
     screen.blit(background, (0, 0)) # x, y 좌표 설정
     bubble_group.draw(screen)
     pointer.rotate(to_angle_left + to_angle_right) # 포인터 이미지를 각도에 맞게 회전
@@ -216,9 +251,9 @@ while running:
             curr_bubble.move()
         curr_bubble.draw(screen)
 
-        if curr_bubble.rect.top <= 0:
-            curr_bubble = None
-            fire = False
+        # if curr_bubble.rect.top <= 0:
+        #     curr_bubble = None
+        #     fire = False
 
     if next_bubble:
         next_bubble.draw(screen)
