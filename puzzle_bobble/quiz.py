@@ -20,4 +20,4 @@ def factorial(n):
         return 1
 
 result = factorial(4)
-print(resul)
+print(result)
